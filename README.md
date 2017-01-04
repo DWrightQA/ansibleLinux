@@ -2,7 +2,8 @@
 
 This is a vagrantfile that stands up 2 Centos7 VM's, one with an installation of the latest version of ansible. A hosts file and a set of simple roles are included. This is primarily intended to be a test platform for ansible roles.   
 
-
+<br />
+<br />
 PREREQUISITES
 
 1. PuttyGen latest
@@ -10,8 +11,9 @@ PREREQUISITES
 3. Vagrant latest
 4. Git latest
 
-
-STEPS:
+<br />
+<br />
+STEPS
 
 1. open git and create a directory for the repo
 2. Pull repo to directory
@@ -34,10 +36,10 @@ STEPS:
 10. Run vagrant up on the root directory of the downloaded repo
 11. Putty into the config box with the created session
 
-
-
-
-NOTE*
+<br />
+<br />
+<br />
+NOTE
 
 The use of "vagrant halt" and "vagrant reload" will mean the VM's lose their static IP address.
 To get around this always run the commands as:
