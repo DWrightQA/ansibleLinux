@@ -23,6 +23,6 @@ STEPS:
 8. Set a defualt configutation for putty for the ansible box:
   1. Under Session/Netowrk IP - set to "192.168.80.20"
   2. Under Connection/SSH/Auth - search for the private key to key just generated
-  3. Under Connection/Data - set Auto-login username to "Ansibleadmin"
+  3. Under Connection/Data - set Auto-login username to "ansibleadmin"
 8. Run vagrant up on the root directory of the downloaded repo
 9. Putty into the config box with the created session
