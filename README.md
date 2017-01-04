@@ -6,7 +6,7 @@ This is a vagrantfile that stands up 2 Centos7 VM's, one with an installation of
 <br />
 PREREQUISITES
 
-1. PuttyGen latest
+1. Putty/PuttyGen latest
 2. virtualbox manager latest
 3. Vagrant latest
 4. Git latest
@@ -15,8 +15,8 @@ PREREQUISITES
 <br />
 STEPS
 
-1. open git and create a directory for the repo
-2. Pull repo to directory
+1. open git
+2. Run https://github.com/DWrightQA/ansibleLinux.git in the directory above where you would like to work
 3. Run vagrant commands:
   1. vagrant plugin install vagrant-vbguest
 4. Go to {{ home dir }}/.vagrant.d/boxes/centos-VAGRANTSLASH-7\{{ latest version }}\virtualbox\Vagrantfile and open it
