@@ -1,9 +1,14 @@
 # ansibleLinux
 
+PREREQUISITES
+1. Powershell version 3+
+2. virtualbox manager latest
+3. Vagrant latest
+4. Git latest
+
+
 STEPS:
 
-1. Install GIT
-2. Install latest Vagrant
 3. Pull repo to directory
 4. Run vagrant commands:
   2. vagrant plugin install vagrant-vbguest
