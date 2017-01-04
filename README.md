@@ -15,13 +15,13 @@ PREREQUISITES
 <br />
 STEPS
 
-1. open git
-2. Run https://github.com/DWrightQA/ansibleLinux.git in the directory above where you would like to work
+1. open git and run https://github.com/DWrightQA/ansibleLinux.git in the directory above where you would like to work
+2. run vagrant box addd centos/7 and select option 2, virtualbox
 3. Run vagrant commands:
   1. vagrant plugin install vagrant-vbguest
 4. Go to {{ home dir }}/.vagrant.d/boxes/centos-VAGRANTSLASH-7\{{ latest version }}\virtualbox\Vagrantfile and open it
 5. Change shared folder line to
-  1. config.vm.synced_folder ".", "/vagrant"
+  1. config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
 5. Run command ssh-keygen and create two keys of default names
 6. copy these keys (id_rsa and id_rsa.pub) to {{ repo dir }}\files\user\ansibleadmin\ssh
 7. Run PuttyGen and load the id_rsa key and save it in putty format
