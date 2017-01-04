@@ -1,6 +1,0 @@
-- name: close group files
-  lineinfile:
-    dest: "/tmp/group_{{ group }}"
-    line: "</tr></tbody></table></div><br></br>"
-    insertafter: EOF
-  delegate_to: 127.0.0.1

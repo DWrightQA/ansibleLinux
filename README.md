@@ -1,5 +1,8 @@
 # ansibleLinux
 
+This is a vagrantfile that stands up 2 Centos7 VM's, one with an installation of the latest version of ansible. A hosts file and a set of simple roles are included. This is primarily intended to be a test platform for ansible roles.   
+
+
 PREREQUISITES
 
 1. PuttyGen latest

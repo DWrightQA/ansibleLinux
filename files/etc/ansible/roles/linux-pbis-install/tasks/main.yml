@@ -1,8 +1,0 @@
----
-
-- include: deploy.yml
-  when: (arg_action is not defined) or (arg_action != 'undeploy')
-
-- include: undeploy.yml
-  when: (arg_action is defined) and (arg_action == 'undeploy')
-

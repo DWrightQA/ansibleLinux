@@ -1,5 +1,0 @@
-- name: leave AD domain
-  shell: /opt/pbis/bin/domainjoin-cli leave
-
-- name: uninstall pbis
-  shell: /opt/pbis/bin/uninstall.sh purge

@@ -1,5 +1,0 @@
-<h2>Group 1</h2>
-<div class="table-wrap"><table class="relative-table wrapped confluenceTable" style="width: 47.8227%;">
-<colgroup><col style="width: 37.8467%;"/><col style="width: 6.68842%;"/><col style="width: 14.6819%;"/><col style="width: 13.7031%;"/><col style="width: 6.03589%;"/><col style="width: 10.4405%;"/><col style="width: 10.6036%;"/>
-</colgroup><tbody><tr><th class="confluenceTh">Name</th><th class="confluenceTh">OS</th><th class="confluenceTh">Hostname</th><th class="confluenceTh">Managed</th><th class="confluenceTh">IP</th><th class="confluenceTh">Group</th><th class="confluenceTh">Status</th></tr>
-<tr><td class="confluenceTd"><a href='http://192.168.220.101:8090/display/TE/{{ logical_name }}+-+{{ ansible_hostname }}' rel='nofollow'>{{ ansible_hostname }}</a></td><td class="confluenceTd">{{ ansible_distribution }}</td><td class="confluenceTd">{{ ansible_hostname }}</td><td class="confluenceTd">{{ managed }}</td><td class="confluenceTd">{{ ansible_all_ipv4_addresses[0] }}</td><td class="confluenceTd">{{ group }}</td><td class="confluenceTd">{{ status }}</td></tr>
