@@ -1,0 +1,5 @@
+- hosts:
+    - atlassian
+  gather_facts: yes
+  roles:
+    - all-gather-facts

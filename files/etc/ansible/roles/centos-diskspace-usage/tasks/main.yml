@@ -1,0 +1,21 @@
+  - name: Copy shell file to remote host
+    template:
+      src: Find_Used_Space.j2
+      dest: /home/ansibleadmin/Find_Used_Space.sh
+      mode: 0777
+    with_items: "{{ variables }}"
+
+  - name: get percentage of vm used
+    shell: /home/ansibleadmin/Find_Used_Space.sh
+    changed_when: false
+    register: std
+
+  - name: Set percentage as a fact "diskuse"
+    set_fact:
+      diskuse: "{{ std.stdout }}"
+
+
+  - fail:
+      msg: "The dir {{ item.directory }} is now {{ diskuse }}% full"
+    when: diskuse > "{{ item.percentage }}"
+    with_items: "{{ variables }}"

@@ -1,0 +1,101 @@
+- name: set inital facts
+  set_fact:
+    diff_user: false
+    update_needed: false
+
+- name: get page by title
+  uri:
+    url: "{{ confluence_url }}?spaceKey=TE&title={{ logical_name }}+-+{{ ansible_hostname }}&expand=version"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  register: update
+
+- name: get page by id
+  uri:
+    url: "{{ confluence_url }}/{{ update.json.results[0].id }}"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  register: update2
+
+- set_fact:
+    diff_user: true
+  when:
+    -  update2.json.version.by.username is defined
+    - "'{{update2.json.version.by.username}}' != '{{ confluence_user }}'"
+
+- name: update page (linux)
+  uri:
+    url: "{{ confluence_url }}/{{update.json.results[0].id}}"
+    HEADER_Content-Type: "application/json"
+    method: PUT
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-update-pages/templates/updatepage_linux.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  changed_when: true
+  notify:
+    - get contents (shell)
+  when:
+    - (ansible_os_family is not defined or ansible_os_family != 'Windows')
+    - ( diff_user )
+
+- name: update page (windows)
+  uri:
+    url: "{{ confluence_url }}/{{update.json.results[0].id}}"
+    HEADER_Content-Type: "application/json"
+    method: PUT
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-update-pages/templates/updatepage_win.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  changed_when: true
+  notify:
+    - get contents (shell)
+  when:
+    - ansible_os_family is defined
+    - ansible_os_family == 'Windows'
+    - ( diff_user )
+
+- name: create group file
+  template:
+    src: confluencetable_begin.j2
+    dest: "/tmp/group_{{ group }}"
+  delegate_to: 127.0.0.1
+
+- name: add page to group file (Windows)
+  lineinfile:
+    dest: "/tmp/group_{{ group }}"
+    line: "{{ lookup('template','/etc/ansible/roles/all-gather-update-pages/templates/confluencetable_block_win.j2') }}"
+    insertafter: EOF
+    state: present
+  changed_when: false
+  delegate_to: 127.0.0.1
+  when:
+    - ansible_os_family is defined
+    - ansible_os_family == 'Windows'
+
+- name: add page to group file (linux)
+  lineinfile:
+    dest: "/tmp/group_{{ group }}"
+    line: "{{ lookup('template','/etc/ansible/roles/all-gather-update-pages/templates/confluencetable_block_linux.j2') }}"
+    insertafter: EOF
+    state: present
+  changed_when: false
+  delegate_to: 127.0.0.1
+  when:
+    - (ansible_os_family is not defined or ansible_os_family != 'Windows')

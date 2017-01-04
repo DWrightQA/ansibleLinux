@@ -1,0 +1,9 @@
+- name: make a list of the files in content
+  command: "ls /home/damon/confluence-email-notifications-plugin-8.7.0/templates/content"
+  register: dir_out
+
+- name: replace files in content
+  template:
+    name: ma_name.j2
+    dest: "/home/damon/confluence-email-notifications-plugin-8.7.0/templates/content/{{item}}"
+  with_items: dir_out.stdout_lines

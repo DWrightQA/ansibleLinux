@@ -1,0 +1,8 @@
+- name: add the ho admin sudoers file
+  copy:
+    src: admingroup.yml
+    dest: /etc/sudoers.d/gg_ma_atos_administrators
+    owner: root
+    group: root
+    mode: 0640
+    validate: "visudo -cf %s"

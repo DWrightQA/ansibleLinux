@@ -1,0 +1,127 @@
+- name: get list of all content on confluence
+  run_once: true
+  uri:
+    url: "{{ confluence_url }}/"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  register: response
+
+- name: set sizes (for debugging)
+  set_fact:
+    # ansible_memtotal_mb: 16384
+    # ansible_processor_cores: 4
+    flex: 11
+  run_once: true
+
+- name: find flex instance
+  set_fact:
+    flex: "{{ lookup('template','/etc/ansible/roles/all-gather-create-pages/templates/flex.j2') | replace('\n','') }}"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- name: find windows diskspace (shell)
+  win_shell: $disk = get-WmiObject win32_logicaldisk -Filter 'DeviceID="C:"' | Select-Object Size ; $disk = ($disk.size/1GB) ; $disk = $('{0:#.0}GB' -f $disk) ; Write-Host $disk -NoNewLine
+  register: out
+  changed_when: false
+  when:
+    - ansible_os_family is defined
+    - ansible_os_family == 'Windows'
+
+- name: find windows diskspace (set_fact)
+  set_fact:
+    windows_diskspace: "{{- out.stdout }}"
+  when:
+    - ansible_os_family is defined
+    - ansible_os_family == 'Windows'
+
+- name: set inital facts
+  set_fact:
+    rest_command: "POST"
+    os: "LINUX"
+    diff_user: false
+    list_of_vms_exists: false
+    update_needed: false
+
+- name: set rest_command to "POST" or "PUT"
+  set_fact:
+    rest_command: "PUT"
+  when: response.json.results[{{ item }}].title == "{{ logical_name }} - {{ ansible_hostname }}"
+  with_sequence: "start=0 end={{response.json.size | int - 1}}"
+
+- name: set list_of_vms_exists
+  run_once: true
+  set_fact:
+    list_of_vms_exists: true
+  when: response.json.results[{{ item }}].title == "List Of VMs"
+  with_sequence: "start=0 end={{response.json.size | int - 1}}"
+
+- name: create List of VM's page if it does not exist
+  uri:
+    url: "{{ confluence_url }}/"
+    HEADER_Content-Type: "application/json"
+    method: POST
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-create-pages/templates/createpage_list.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  run_once: true
+  when: list_of_vms_exists == false
+  changed_when: true
+
+- name: get "List of VM's" page
+  uri:
+    url: "{{ confluence_url }}?spaceKey={{ space }}&title=List+Of+VMs&expand=version"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  run_once: true
+  register: list
+
+- name: create page (linux)
+  uri:
+    url: "{{ confluence_url }}/"
+    HEADER_Content-Type: "application/json"
+    method: POST
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-create-pages/templates/createpage_linux.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  changed_when: true
+  notify:
+    - get contents (shell)
+  when:
+    - rest_command == "POST"
+    - (ansible_os_family is not defined or ansible_os_family != 'Windows')
+
+- name: create page (windows)
+  uri:
+    url: "{{ confluence_url }}/"
+    HEADER_Content-Type: "application/json"
+    method: POST
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-create-pages/templates/createpage_win.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  changed_when: true
+  notify:
+  - get contents (shell)
+  when:
+    - rest_command == "POST"
+    - ansible_os_family is defined
+    - ansible_os_family == 'Windows'

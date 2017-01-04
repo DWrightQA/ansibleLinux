@@ -1,0 +1,4 @@
+- name: Install latest version of java
+  yum:
+    name: java-1.7.0-openjdk
+    state: latest

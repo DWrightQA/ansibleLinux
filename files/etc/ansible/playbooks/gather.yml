@@ -1,0 +1,11 @@
+- hosts:
+    - atlassian
+    - winserver
+    - configuration-management
+  gather_facts: yes
+  vars:
+    space: TE
+    confluence_url: "http://192.168.220.101:8090/rest/api/content"
+    prefix: (automated)
+  roles:
+    - all-confluence-refresh

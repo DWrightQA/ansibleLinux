@@ -1,0 +1,12 @@
+- hosts:
+    - atlassian
+  vars:
+    new_name: test2
+  roles:
+    - linux-change-hostname
+
+- hosts:
+    - winserver
+  roles:
+    - win-create-temp
+

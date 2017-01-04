@@ -1,0 +1,30 @@
+{%- if ansible_processor_cores == 1 -%}
+ {%- if ansible_memtotal_mb < 2049 -%}
+   {%- set flex = 1 -%}
+ {%- elif ansible_memtotal_mb < 4097 -%}
+   {%- set flex = 2 -%}
+ {%- elif ansible_memtotal_mb < 8193 -%}
+   {%- set flex = 3 -%}
+ {%- endif -%}
+{%- elif ansible_processor_cores == 2 -%}
+ {%- if ansible_memtotal_mb < 4097 -%}
+   {%- set flex = 4 -%}
+ {%- elif ansible_memtotal_mb < 8193 -%}
+   {%- set flex = 5 -%}
+ {%- elif ansible_memtotal_mb < 16385 -%}
+   {%- set flex = 6 -%}
+ {%- endif -%}
+{%- elif ansible_processor_cores == 4 -%}
+ {%- if ansible_memtotal_mb < 16385 -%}
+   {%- set flex = 7 -%}
+ {%- elif ansible_memtotal_mb < 32769 -%}
+   {%- set flex = 8 -%}
+ {%- endif -%}
+{%- elif ansible_processor_cores == 8 -%}
+ {%- if ansible_memtotal_mb < 32769 -%}
+   {%- set flex = 9 -%}
+ {%- elif ansible_memtotal_mb < 65537 -%}
+   {%- set flex = 10 -%}
+ {%- endif -%}
+{%- endif -%}
+{{ flex -}}

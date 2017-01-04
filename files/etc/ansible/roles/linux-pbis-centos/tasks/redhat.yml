@@ -1,0 +1,4 @@
+---
+  - name: Redhat | yum install pbis-open
+    yum: name=pbis-open state=latest
+ 

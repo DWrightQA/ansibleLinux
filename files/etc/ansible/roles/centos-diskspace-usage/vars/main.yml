@@ -1,0 +1,5 @@
+---
+
+variables:
+  - percentage: "90"
+    directory: "/"

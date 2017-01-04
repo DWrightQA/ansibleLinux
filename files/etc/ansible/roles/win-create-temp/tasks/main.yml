@@ -1,0 +1,4 @@
+- name: do something on windows
+  win_file:
+    path: C:\foo.bar
+    state: touch

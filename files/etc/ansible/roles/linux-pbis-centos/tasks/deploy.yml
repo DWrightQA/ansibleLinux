@@ -1,0 +1,53 @@
+# tasks file for pbis
+  - name: remove pam_faillock.so from pam.d files
+    replace:
+      dest: "{{ item }}"
+      regexp: '(.*?)pam_faillock.so(.*?)$'
+      backup: yes
+      owner: root
+      group: root
+    with_items:
+      - '/etc/pam.d/password-auth'
+      - '/etc/pam.d/system-auth'
+
+  - name: install PBIS-open
+    shell: yes | /vagrant/files/install/pbis-open-8.5.2.265.linux.x86_64.rpm.sh
+    when: ansible_os_family == "RedHat"
+
+# done by linux-dns
+  - name: add AD servers to resolv.conf
+    lineinfile:
+      dest: /etc/resolv.conf
+      state: present
+      insertbefore: BOF
+      line: "{{ item }}"
+      mode: 0644
+    with_items:
+      - 'search {{ groupvar_ad_domain }}'
+      - 'nameserver 192.168.80.13'
+
+  - name: add FQDN to /etc/hosts
+    lineinfile:
+      dest: /etc/hosts
+      state: present
+      line: "{{ ansible_all_ipv4_addresses[0] }} {{ ansible_hostname }}.{{ groupvar_ad_domain }} {{ ansible_hostname }}"
+      insertafter: EOF
+      mode: 0644
+
+  - name: Check the Domain status
+    shell: /opt/pbis/bin/lsa get-status |grep Netbios |awk '{print $3}'
+    register: domain_status
+
+  - name: Join the machine if it is not already on the domain.
+    command: /usr/bin/domainjoin-cli join {{ groupvar_ad_domain }} {{ groupvar_ad_rootuser }} {{ groupvar_ad_rootuser_password }}
+    when: domain_status.stdout != "{{ groupvar_ad_domain_netbios_name }}"
+    #no_log: true
+    notify:
+      - config pbis ssh
+      - config pbis homedirtemplate
+      - config pbis localhomedirtemplate
+      - config pbis shell
+      - config pbis userdomainprefix
+      - config pbis assumedefaultdomain
+      - config pbis nssenumeration
+      - config pbis homedirumask

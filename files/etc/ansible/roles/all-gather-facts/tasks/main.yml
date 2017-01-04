@@ -1,0 +1,172 @@
+- name: gather facts
+  setup:
+  register: status
+
+- name: get url
+  run_once: true
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  register: response
+
+- name: set inital facts
+  set_fact:
+    rest_command: "POST"
+    os: "LINUX"
+    diff_user: false
+    list_of_vms_exists: false
+    update_needed: false
+
+- name: set rest_command to "POST" or "PUT"
+  set_fact:
+    rest_command: "PUT"
+  when: response.json.results[{{ item }}].title == "{{ ansible_hostname }}"
+  with_sequence: "start=0 end={{response.json.size | int - 1}}"
+
+- name: set list_of_vms_exists
+  run_once: true
+  set_fact:
+    list_of_vms_exists: true
+  when: response.json.results[{{ item }}].title == "List Of VMs"
+  with_sequence: "start=0 end={{response.json.size | int - 1}}"
+
+- name: create List of VM's page if it does not exist
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/"
+    HEADER_Content-Type: "application/json"
+    method: POST
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-facts/templates/createpage_list.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  run_once: true
+  when: list_of_vms_exists == false
+  changed_when: true
+
+- name: get "List of VM's" page
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content?spaceKey=TE&title=List+Of+VMs&expand=version"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  run_once: true
+  register: list
+
+- name: set OS for vm
+  set_fact:
+    os: "WINDOWS"
+  when:
+    - ansible_os_family is defined
+    - ansible_os_family == 'Windows'
+
+- name: create page (linux)
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/"
+    HEADER_Content-Type: "application/json"
+    method: POST
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-facts/templates/createpage_linux.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  changed_when: true
+  when:
+    - rest_command == "POST"
+    - os == "LINUX"
+
+- name: create page (windows)
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/"
+    HEADER_Content-Type: "application/json"
+    method: POST
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-facts/templates/createpage_win.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  changed_when: true
+  when:
+    - rest_command == "POST"
+    - os == "WINDOWS"
+
+- name: get page by title
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content?spaceKey=TE&title={{ ansible_hostname }}&expand=version"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  register: update
+  when: rest_command == "PUT"
+
+- name: get page by id
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/{{ update.json.results[0].id }}"
+    HEADER_Content-Type: "application/json"
+    method: GET
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  register: update2
+  when: rest_command == "PUT"
+
+- set_fact:
+    diff_user: true
+  when:
+    -  update2.json.version.by.username is defined
+    - "'{{update2.json.version.by.username}}' != '{{ confluence_user }}'"
+
+- name: update page (linux)
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/{{update.json.results[0].id}}"
+    HEADER_Content-Type: "application/json"
+    method: PUT
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-facts/templates/updatepage_linux.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  changed_when: true
+  when:
+    - rest_command == "PUT"
+    - os == "LINUX"
+    - ( diff_user or status.changed)
+
+- name: update page (windows)
+  uri:
+    url: "http://192.168.220.101:8090/rest/api/content/{{update.json.results[0].id}}"
+    HEADER_Content-Type: "application/json"
+    method: PUT
+    body : "{{ lookup('template','/etc/ansible/roles/all-gather-facts/templates/updatepage_win.j2') }}"
+    body_format: json
+    user: "{{ confluence_user }}"
+    password: "{{ confluence_pass }}"
+    return_content: yes
+    force_basic_auth: yes
+  delegate_to: 127.0.0.1
+  changed_when: true
+  when:
+    - rest_command == "PUT"
+    - os == "WINDOWS"
+    - ( diff_user or status.changed)

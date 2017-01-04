@@ -1,0 +1,4 @@
+groupvar_ad_domain_prefix: ITTest
+groupvar_ad_domain: ITTest.local
+groupvar_ad_rootuser: admin
+groupvar_ad_rootuser_password: "{{ vault_domain_password }}"
