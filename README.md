@@ -33,3 +33,12 @@ STEPS:
   3. Under Connection/Data - set Auto-login username to "ansibleadmin"
 10. Run vagrant up on the root directory of the downloaded repo
 11. Putty into the config box with the created session
+
+
+NOTE*
+
+The use of "vagrant halt" and "vagrant reload" will mean the VM's lose their static IP address.
+To get around this always run the commands as:
+  1. vagrant up --provision-with network
+  2. OR vagrant reload --provision-with network
+This will run a short script that resets the network and allows the VM's to assign their static IP's

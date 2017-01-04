@@ -13,4 +13,4 @@ sudo chown root /etc/ssh/sshd_config
 sudo chgrp root /etc/ssh/sshd_config
 sudo chmod 600 /etc/ssh/sshd_config
 
-service sshd restart
+sudo systemctl restart  sshd.service

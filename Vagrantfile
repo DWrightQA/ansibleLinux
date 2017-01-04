@@ -32,7 +32,7 @@ Vagrant.configure("2") do |config|
     node.vm.provision :shell, path: "bootstrap/user/ansibleadmin/addpublickey.sh"
     node.vm.provision :shell, path: "bootstrap/install/ansible.sh"
     node.vm.provision :shell, path: "bootstrap/startup/password.sh"
-    node.vm.provision :shell, path: "bootstrap/resetnetwork.sh"
+    node.vm.provision "network", type: "shell", path: "bootstrap/resetnetwork.sh"
     node.vm.network "private_network", ip: "192.168.80.20"
     # node.vm.network "private_network",  type: "dhcp"
   end
@@ -44,8 +44,8 @@ Vagrant.configure("2") do |config|
     node.vm.provision :shell, path: "bootstrap/user/ansibleadmin/adduser.sh"
     node.vm.provision :shell, path: "bootstrap/user/ansibleadmin/addpublickey.sh"
     node.vm.provision :shell, path: "bootstrap/install/mailhog.sh"
-    node.vm.provision :shell, path: "bootstrap/resetnetwork.sh"
-    node.vm.network "private_network", ip: "192.168.80.21"
+    node.vm.provision "network", path: "bootstrap/resetnetwork.sh"
+    node.vm.network "private_network", type: "shell", ip: "192.168.80.21"
     # node.vm.network "private_network",  type: "dhcp"
   end
 

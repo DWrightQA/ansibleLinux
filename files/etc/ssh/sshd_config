@@ -123,8 +123,8 @@ X11Forwarding yes
 UsePrivilegeSeparation sandbox		# Default for new installations.
 #PermitUserEnvironment no
 #Compression delayed
-#ClientAliveInterval 0
-#ClientAliveCountMax 3
+ClientAliveInterval 10
+ClientAliveCountMax 60
 #ShowPatchLevel no
 #UseDNS yes
 UseDNS no
