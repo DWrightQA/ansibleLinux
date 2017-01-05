@@ -2,7 +2,7 @@ Vagrant.configure("2") do |config|
 
 
   config.vm.provider "virtualbox" do |vb|
-   vb.gui = false
+   vb.gui = true
    vb.memory = 800
    vb.cpus = 1
    vb.linked_clone = true

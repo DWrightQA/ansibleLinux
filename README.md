@@ -15,6 +15,7 @@ PREREQUISITES
 <br />
 STEPS
 
+0. Copy the insecure private key in the repo folder and place it in .vagrant.d, overwriting the key stored there
 1. open git and run https://github.com/DWrightQA/ansibleLinux.git in the directory above where you would like to work
 2. run vagrant box addd centos/7 and select option 2, virtualbox
 3. Run vagrant commands:
