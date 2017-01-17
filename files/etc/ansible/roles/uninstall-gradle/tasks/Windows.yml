@@ -1,0 +1,23 @@
+
+- name: (Windows) remove gradle folder
+  win_file:
+    path: '{{ gradle_home_path }}'
+    state: absent
+
+- name: '(Windows) remove {{ gradle_env_name_home }}'
+  win_environment:
+    name: '{{ gradle_env_name_home }}'
+    state: absent
+    level: machine
+
+- name: gather_facts
+  setup:
+
+- name: (Windows) remove gradle enviroment path variable
+  win_environment:
+    state: present
+    level: machine
+    name: path
+    value: "{{ ansible_env.Path | regex_replace(gradle_bin_regex,'') }}"
+
+

@@ -1,0 +1,40 @@
+- name: (Windows) check if jdk is installed
+  win_stat:
+    path: 'C:\Program Files\Java\jdk1.8.0_111'
+  register: installed
+
+- name: (Windows) copy jdk to vm
+  win_copy:
+    src: jdk-8u111-windows-x64.exe
+    dest: C:\jdk-8u111-windows-x64.exe
+  when: installed.stat.exists==False
+
+- name: (Windows) install jdk
+  raw: C:\jdk-8u111-windows-x64.exe /s
+  when: installed.stat.exists==False
+
+- name: (Windows) remove jdk installer
+  win_file:
+    path: C:\jdk-8u111-windows-x64.exe
+    state: absent
+  when: installed.stat.exists==False
+
+- name: (Windows) set JAVA_HOME
+  win_environment:
+    level: machine
+    name: JAVA_HOME
+    value: C:\Program Files\Java\jdk1.8.0_111
+  when: installed.stat.exists==False
+
+- name: (Windows) ensures gather_facts is up to date
+  setup:
+
+- name: (Windows) set java/bin
+  win_environment:
+    state: present
+    level: machine
+    name: path
+    value: '{{ ansible_env.Path }};%JAVA_HOME%\bin'
+  when:
+    - installed is defined
+    - installed.stat.exists==False

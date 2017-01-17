@@ -1,0 +1,54 @@
+---
+- name: install unzip
+  yum:
+    name: unzip
+    state: present
+
+- name: (RedHat) check if gradle version is installed
+  stat:
+    path: '{{ gradle_home_path }}'
+  register: installed
+
+- name: '(RedHat) creates {{ gradle_install_path }} directory'
+  file:
+    path: '{{ gradle_install_path }}'
+    state: directory
+
+# this will have to be change to grab from repo
+- name: (RedHat) copy gradle zip to vm
+  copy:
+    src: '{{ gradle_package }}'
+    dest: '{{ gradle_archive }}'
+  when:
+    - installed is defined
+    - installed.stat.exists==False
+
+- name: '(RedHat) unpack gradle zip folder to {{ gradle_install_path }}'
+  unarchive:
+    src: '{{ gradle_archive }}'
+    dest: '{{ gradle_install_path }}'
+    remote_src: yes
+  when:
+    - installed is defined
+    - installed.stat.exists==False
+
+- name: '(RedHat) remove {{ gradle_package }} file'
+  file:
+    path: '{{ gradle_archive }}'
+    state: absent
+
+- name: '(RedHat) add env var {{ gradle_env_name_home }}'
+  template:
+    src: gradle_path.j2
+    dest: /etc/profile.d/gradle_path.sh
+    owner: root
+    group: root
+    mode: 0644
+
+- name: (RedHat) add gradle/bin to PATH
+  template:
+    src: gradle_path_bin.j2
+    dest: /etc/profile.d/gradle_path_bin.sh
+    owner: root
+    group: root
+    mode: 0644

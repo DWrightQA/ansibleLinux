@@ -1,0 +1,5 @@
+- hosts: target
+  roles:
+    - centos-install-jdk
+    - centos-install-apache
+    - centos-install-jenkins

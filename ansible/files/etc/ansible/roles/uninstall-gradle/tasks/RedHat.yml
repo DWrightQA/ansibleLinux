@@ -1,0 +1,15 @@
+
+- name: (RedHat) remove gradle folder
+  file:
+    path: '{{ gradle_home_path }}'
+    state: absent
+
+- name: '(RedHat) remove enviroment variable {{ gradle_env_name_home }}'
+  file:
+    path: /etc/profile.d/gradle_path.sh
+    state: absent
+
+- name: '(RedHat) remove enviroment variable {{ gradle_env_name_home }}/bin'
+  file:
+    path: /etc/profile.d/gradle_path_bin.sh
+    state: absent

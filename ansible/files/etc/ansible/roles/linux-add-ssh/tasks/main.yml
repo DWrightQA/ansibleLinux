@@ -1,0 +1,5 @@
+- name: pass along ssh key to confluence
+  authorized_key:
+    user: confluence
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+  become: yes

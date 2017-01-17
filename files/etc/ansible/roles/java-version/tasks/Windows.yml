@@ -1,0 +1,17 @@
+---
+
+# - name: test
+#   win_shell: '$var = {{ ansible_env.JAVA_HOME }}'
+#   register: out
+#   when: ansible_env.JAVA_HOME is defined
+
+- set_fact:
+    version: '{{ ansible_env.JAVA_HOME | replace("C:\Program Files\Java\jdk","") }}'
+  when: ansible_env.JAVA_HOME is defined
+
+- set_fact:
+    version: "undefined"
+  when: ansible_env.JAVA_HOME is not defined
+
+- debug:
+    var: version

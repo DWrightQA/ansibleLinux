@@ -1,0 +1,17 @@
+---
+
+accounts:
+  - sam_account_name: CTE\\ma_mkeeble
+    state: present
+  - sam_account_name: CTE\\ma_gknowles
+    state: present
+  - sam_account_name: CTE\\ma_jhartley
+    state: present
+  - sam_account_name: CTE\\ma_mpatel
+    state: present
+  - sam_account_name: CTE\\ma_rread
+    state: present
+  - sam_account_name: CTE\\ma_wharvey
+    state: present
+  - sam_account_name: CTE\\ma_dwright
+    state: present

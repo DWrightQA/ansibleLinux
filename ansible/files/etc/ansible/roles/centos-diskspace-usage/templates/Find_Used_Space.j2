@@ -1,0 +1,7 @@
+used=$(sudo df -h --output=pcent {{ item.directory }})
+used=$(echo $used | (sed 's/.*[ ]//' | sed 's/[%].*//'))
+var=$(expr $used : '.*.')
+if [ $var == 1 ]; then
+  used="0"$used
+fi
+echo $used

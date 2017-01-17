@@ -1,0 +1,14 @@
+- name: install nginx repository on centos
+  yum:
+    name: epel-release
+    state: present
+
+- name: install nginx on centos
+  yum:
+    name: nginx
+    state: present
+
+- name: run nginx on centos
+  service:
+    name: nginx
+    state: started

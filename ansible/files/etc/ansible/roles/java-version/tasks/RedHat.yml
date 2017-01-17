@@ -1,0 +1,17 @@
+
+
+- name: (RedHat) get "java -version" output and seperated
+  shell: "java -version 2>&1 | grep version"
+  register: out
+  ignore_errors: true
+  changed_when: false
+
+- set_fact:
+    version: "{{ out.stdout | replace('openjdk','') | replace('java','') | replace(' ','') | replace('version','') | replace ('\"','') }}"
+
+- set_fact:
+    version: undefined
+  when: "{{ out.stdout | length }} == 0"
+
+- debug:
+    var: version

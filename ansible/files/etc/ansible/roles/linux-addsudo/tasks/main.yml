@@ -1,0 +1,11 @@
+- name: create the sudoers file
+  lineinfile:
+    dest: /etc/sudoers
+    state: "{{ item.state }}"
+    insertafter: "ROOT ALL=(ALL:ALL) ALL"
+    line: "{{ item.sam_account_name }} ALL=(ALL:ALL) ALL"
+    owner: root
+    group: root
+    validate: "visudo -cf %s"
+  with_items: "{{ accounts }}"
+  when: item.state is defined

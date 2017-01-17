@@ -1,0 +1,3 @@
+- hosts: atlassian
+  roles:
+    - linux-add-ssh

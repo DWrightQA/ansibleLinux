@@ -1,0 +1,45 @@
+- name: (Windows) check if current version of gradle is installed
+  win_stat:
+    path: '{{ gradle_home_path }}'
+  register: installed
+
+- name: (Windows) copy gradle package
+  win_copy:
+    src: '{{ gradle_package }}'
+    dest: '{{ gradle_archive }}'
+  when:
+    - installed is defined
+    - installed.stat.exists==False
+
+- name: (Windows) unpack gradle zip folder to Program Files\gradle
+  win_unzip:
+    src: '{{ gradle_archive }}'
+    dest: '{{ gradle_install_path }}'
+  when:
+    - installed is defined
+    - installed.stat.exists==False
+
+- name: (Windows) delete gradle zip package
+  win_file:
+    path: '{{ gradle_archive }}'
+    state: absent
+
+- name: '(Windows) sets {{ gradle_env_name_home }} env variable'
+  win_environment:
+    name: '{{ gradle_env_name_home }}'
+    state: present
+    value: '{{ gradle_home_path }}'
+    level: machine
+
+- name: (Windows) ensures gather_facts is up to date
+  setup:
+
+- name: (Windows) sets gradle enviroment variable
+  win_environment:
+    state: present
+    level: machine
+    name: path
+    value: '{{ ansible_env.Path }};{{ gradle_bin_path }}'
+  when:
+    - installed is defined
+    - installed.stat.exists==False

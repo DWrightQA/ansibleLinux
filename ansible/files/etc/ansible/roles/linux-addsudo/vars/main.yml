@@ -1,0 +1,17 @@
+---
+
+accounts:
+  - sam_account_name: ma_mkeeble
+    state: present
+  - sam_account_name: ma_gknowles
+    state: present
+  - sam_account_name: ma_jhartley
+    state: present
+  - sam_account_name: ma_mpatel
+    state: present
+  - sam_account_name: ma_rread
+    state: present
+  - sam_account_name: ma_wharvey
+    state: present
+  - sam_account_name: ma_dwright
+    state: present

@@ -1,0 +1,4 @@
+- name: (RedHat) Install latest version of java
+  yum:
+    name: java
+    state: latest
